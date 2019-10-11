@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             BackgroundColor="White"
+             xmlns:convert="clr-namespace:Trigger;assembly=Trigger"
+             xmlns:local="clr-namespace:Trigger"
+             x:Class="Trigger.MainPage">    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style TargetType="Entry">                
+                <Setter Property="Margin" Value="40,50"/>
+            </Style>
+            <convert:TextToColor x:Key="TextToColorConverter"/>
+            <convert:DateToStringConverter x:Key="DateTimeConverter"/>
+            <convert:DateFormatConvert x:Key="DateFormat"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.BindingContext>
+        <local:TextViewModel/>
+    </ContentPage.BindingContext>
+    <StackLayout>
+        <Label Text="Guess My Name" FontSize="50" HorizontalOptions="Center"
+               TextColor="MediumOrchid"/>
+        <StackLayout VerticalOptions="CenterAndExpand">
+            <Entry Text="{Binding EntryText}" x:Name="Name" Placeholder="Name" HorizontalOptions="FillAndExpand">
+                <Entry.Triggers>
+                    <!--<Trigger TargetType="Entry" Property="IsFocused" Value="True">
+                        <Setter Property="BackgroundColor" Value="GreenYellow"/>
+                        <Setter Property="Scale" Value="1.2"/>
+                    </Trigger>-->
+                    <Trigger TargetType="Entry" Property="IsFocused" Value="False">
+                        <Setter Property="BackgroundColor" Value="White"/>
+                    </Trigger>
+                    <EventTrigger Event="Focused">
+                        <local:ClickEntryTrigger/>
+                    </EventTrigger>
+                </Entry.Triggers>
+            </Entry>            
+        </StackLayout>
+        
+        
+        <Switch x:Name="aaa"/>
+        <Entry Text="{Binding Source={x:Reference aaa},Path=IsToggled,Converter={StaticResource DateTimeConverter}}" FontSize="50"/>
+
+        <DatePicker x:Name="uuu"/>
+        <Entry Text="{Binding Source={x:Reference uuu},Path=Date,Converter={StaticResource DateFormat}}" FontSize="50"/>
+
+        <Switch x:Name="FontSwitch"/>
+        <Label Text="{Binding ButText}" FontSize="40" HorizontalOptions="Center" 
+               TextColor="{Binding ButText,Converter={StaticResource TextToColorConverter}}"
+               >
+            <Label.Triggers>
+                <DataTrigger TargetType="Label" Binding="{Binding Source={x:Reference FontSwitch}, Path=IsToggled}"
+                             Value="True">
+                    <Setter Property="FontAttributes" Value="Bold"/>                    
+                </DataTrigger>
+            </Label.Triggers>
+        </Label>
+        
+        
+        
+        <Button Text="InCorrect" BackgroundColor="MediumOrchid"
+                TextColor="White" Command="{Binding ShowResult}" VerticalOptions="End">            
+            <Button.Triggers>
+                <MultiTrigger TargetType="Button">
+                    <MultiTrigger.Conditions>
+                        <BindingCondition Binding="{Binding Source={x:Reference Name},Path=Text}" Value="Toh"/>
+                        <BindingCondition Binding="{Binding Source={x:Reference Name},Path=BackgroundColor}" Value="White"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Text" Value="Correct"/>
+                </MultiTrigger>                
+            </Button.Triggers>
+        </Button>
+    </StackLayout>
+</ContentPage>
